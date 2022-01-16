@@ -1,0 +1,9 @@
+origin: http://localhost:3000
+server:
+  servlet:
+    context-path: /billmgnt
+
+bill:
+  directory: /Users/viet/Documents/bill-credential
+  file:
+    name: bill.json
