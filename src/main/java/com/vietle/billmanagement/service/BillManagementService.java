@@ -8,8 +8,14 @@ import com.vietle.billmanagement.util.BillManagementUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Slf4j
@@ -30,15 +36,26 @@ public class BillManagementService {
         return null;
     }
 
-    public void createBill(CreateRequest createRequest) throws BillManagementException {
+    /**
+     * read from file and add a new bill
+     * @param bill
+     * @throws BillManagementException
+     */
+    public void createBill(Bill bill) throws BillManagementException {
         try {
-            String currentJsonFromFile = appConfig.getFileDirectory().concat("/").concat(appConfig.getFileName());
-            String jsonFromFile = readFromFile(currentJsonFromFile);
-            log.info(jsonFromFile);
-            //convert jsonFromFile to a list of CreateRequest and add the createRequest then write it back to the file
+            List<Bill> bills = new ArrayList<>(1);
+            List<Bill> billsFromFile = new ArrayList<>();
+            bills.add(bill);
 
-            String json = appConfig.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(createRequest);
-            writeToFile(json, currentJsonFromFile);
+            String filePath = appConfig.getFileDirectory().concat("/").concat(appConfig.getFileName());
+            String jsonString = readFromFile(filePath);
+
+            if(jsonString != null || !jsonString.isEmpty()) {
+                billsFromFile = Arrays.asList(appConfig.getObjectMapper().readValue(jsonString, Bill[].class));
+            }
+            List<Bill> combinedBills = Stream.concat(bills.stream(), billsFromFile.stream()).collect(Collectors.toList());
+            String json = appConfig.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(combinedBills);
+            writeToFile(json, filePath);
         } catch (JsonProcessingException jpe) {
             Status status = BillManagementUtil.getStatus(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), UUID.randomUUID().toString(), jpe.getMessage(), jpe.getStackTrace().toString(), BillManagementUtil.getTimestamp());
             throw new BillManagementException(status);

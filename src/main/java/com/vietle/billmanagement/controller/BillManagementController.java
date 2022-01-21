@@ -1,10 +1,7 @@
 package com.vietle.billmanagement.controller;
 
 import com.vietle.billmanagement.exception.BillManagementException;
-import com.vietle.billmanagement.model.CreateRequest;
-import com.vietle.billmanagement.model.LoginRequest;
-import com.vietle.billmanagement.model.LoginResponse;
-import com.vietle.billmanagement.model.RetrieveBillResponse;
+import com.vietle.billmanagement.model.*;
 import com.vietle.billmanagement.service.BillManagementService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -53,13 +50,13 @@ public class BillManagementController {
 
     /**
      * Create a new bill
-     * @param createRequest
+     * @param bill
      * @throws BillManagementException
      */
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
-    public void createBill(@RequestBody CreateRequest createRequest) throws BillManagementException {
-        this.billManagementService.createBill(createRequest);
+    public void createBill(@RequestBody Bill bill) throws BillManagementException {
+        this.billManagementService.createBill(bill);
     }
 
     /**
