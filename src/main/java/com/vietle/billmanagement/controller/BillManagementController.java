@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1")
 @Slf4j
@@ -44,8 +46,8 @@ public class BillManagementController {
      */
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/bills")
-    public RetrieveBillResponse retrieveBills() throws BillManagementException {
-        return RetrieveBillResponse.builder().build();
+    public List<Bill> retrieveBills() throws BillManagementException {
+        return this.billManagementService.retrieveBills();
     }
 
     /**

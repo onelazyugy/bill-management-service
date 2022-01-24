@@ -12,10 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Bill {
+    private int key;
     private String accountName;
     private String company;
     private String userName;
     private String password;
     private List<String> tags;
     private String description;
+    private boolean isFavorite;
 }

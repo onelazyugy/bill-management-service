@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 @Slf4j
-public class KeywordControllerAdvice extends ResponseEntityExceptionHandler {
+public class BillManagementControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(BillManagementException.class)
     public ResponseEntity<GenericResponse> handleRTVCustomException(BillManagementException ex, WebRequest request) {
         log.error(String.format("BillManagementException occurs: %s", ex.getTransactionStatus().getDetailMessage()));
