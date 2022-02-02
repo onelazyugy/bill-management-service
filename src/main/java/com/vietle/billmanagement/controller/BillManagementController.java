@@ -70,5 +70,9 @@ public class BillManagementController {
 
     }
 
-
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/credential/{id}")
+    public Credential retrieveCredentialById(@PathVariable int id) throws BillManagementException {
+        return this.billManagementService.retrieveCredentialById(id);
+    }
 }

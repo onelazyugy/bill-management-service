@@ -3,19 +3,13 @@ package com.vietle.billmanagement.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.vietle.billmanagement.config.AppConfig;
 import com.vietle.billmanagement.exception.BillManagementException;
-import com.vietle.billmanagement.model.Bill;
-import com.vietle.billmanagement.model.LoginRequest;
-import com.vietle.billmanagement.model.LoginResponse;
-import com.vietle.billmanagement.model.Status;
+import com.vietle.billmanagement.model.*;
 import com.vietle.billmanagement.util.BillManagementUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -91,6 +85,20 @@ public class BillManagementService {
             Status status = BillManagementUtil.getStatus(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), UUID.randomUUID().toString(), e.getMessage(), e.getStackTrace().toString(), BillManagementUtil.getTimestamp());
             throw new BillManagementException(status);
         }
+    }
+
+    /**
+     * Given a bill id, retrieve its username and password
+     * @param id
+     * @return
+     * @throws BillManagementException
+     */
+    public Credential retrieveCredentialById(int id) throws BillManagementException{
+        Optional<Bill> bill = this.retrieveBills().stream().filter(b -> b.getKey() == id).findFirst();
+        if(bill.isPresent()) {
+            return Credential.builder().username(bill.get().getUserName()).password(bill.get().getPassword()).build();
+        }
+        return Credential.builder().build();
     }
 
     private void writeToFile(String json, String currentJsonFromFile) throws BillManagementException {
