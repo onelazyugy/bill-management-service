@@ -53,6 +53,20 @@ public class BillManagementService {
     }
 
     /**
+     * retrieve a single bill based on id
+     * @param id
+     * @return
+     * @throws BillManagementException
+     */
+    public Bill retrieveBill(int id) throws BillManagementException {
+        Optional<Bill> bill = this.retrieveBills().stream().filter(b -> b.getKey() == id).findFirst();
+        if(bill.isPresent()) {
+            return bill.get();
+        }
+        return Bill.builder().build();
+    }
+
+    /**
      * read from file and add a new bill
      * @param bill
      * @throws BillManagementException
@@ -83,6 +97,16 @@ public class BillManagementService {
             throw new BillManagementException(status);
         } catch (Exception e) {
             Status status = BillManagementUtil.getStatus(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), UUID.randomUUID().toString(), e.getMessage(), e.getStackTrace().toString(), BillManagementUtil.getTimestamp());
+            throw new BillManagementException(status);
+        }
+    }
+
+    public void updateBill(Bill billToUpdate, int id) throws BillManagementException {
+        Bill bill = this.retrieveBill(id);
+        if(bill != null && bill.getKey() == id) {
+            //replace the found bill with billToUpdate
+        } else {
+            Status status = BillManagementUtil.getStatus(false, HttpStatus.BAD_REQUEST.value(), UUID.randomUUID().toString(), "bad request", "requested resource does not exist", BillManagementUtil.getTimestamp());
             throw new BillManagementException(status);
         }
     }

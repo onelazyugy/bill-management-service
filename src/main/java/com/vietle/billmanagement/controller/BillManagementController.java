@@ -58,21 +58,39 @@ public class BillManagementController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/create")
     public void createBill(@RequestBody Bill bill) throws BillManagementException {
-        this.billManagementService.createBill(bill);
+         this.billManagementService.createBill(bill);
     }
 
     /**
-     * Update a bill
+     * Retrieve a bill given its id
      */
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("/edit")
-    public void editBill() {
-
+    @GetMapping("/bill/{id}")
+    public Bill retrieveBillById(@PathVariable int id) throws BillManagementException {
+        return this.billManagementService.retrieveBill(id);
     }
 
+    /**
+     * Get the username and password based on bill id
+     * @param id
+     * @return
+     * @throws BillManagementException
+     */
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/credential/{id}")
     public Credential retrieveCredentialById(@PathVariable int id) throws BillManagementException {
         return this.billManagementService.retrieveCredentialById(id);
+    }
+
+    /**
+     * Update a bill
+     * @param bill bill to update
+     * @param id bill id
+     * @throws BillManagementException
+     */
+    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/update/{id}")
+    public void updateBill(@RequestBody Bill bill, @PathVariable int id) throws BillManagementException {
+        this.billManagementService.updateBill(bill, id);
     }
 }
