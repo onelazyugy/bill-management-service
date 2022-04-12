@@ -101,12 +101,36 @@ public class BillManagementService {
         }
     }
 
+    /**
+     * update a bill based on its id
+     * @param billToUpdate
+     * @param id
+     * @throws BillManagementException
+     */
     public void updateBill(Bill billToUpdate, int id) throws BillManagementException {
-        Bill bill = this.retrieveBill(id);
-        if(bill != null && bill.getKey() == id) {
-            //replace the found bill with billToUpdate
-        } else {
-            Status status = BillManagementUtil.getStatus(false, HttpStatus.BAD_REQUEST.value(), UUID.randomUUID().toString(), "bad request", "requested resource does not exist", BillManagementUtil.getTimestamp());
+        try {
+            String filePath = appConfig.getFileDirectory().concat("/").concat(appConfig.getFileName());
+            List<Bill> bills = this.retrieveBills();
+            if(bills.size() > 0) {
+                List<Bill> billsWithoutUpdatedBill = bills.stream().filter(b -> b.getKey() != id).collect(Collectors.toList());
+                if(billsWithoutUpdatedBill.size() < bills.size()) {
+                    billsWithoutUpdatedBill.add(billToUpdate);
+                    List<Bill> sortedBills = billsWithoutUpdatedBill.stream().sorted(Comparator.comparing(Bill::getKey)).collect(Collectors.toList());
+                    String json = appConfig.getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(sortedBills);
+                    writeToFile(json, filePath);
+                } else {
+                    Status status = BillManagementUtil.getStatus(false, HttpStatus.BAD_REQUEST.value(), UUID.randomUUID().toString(), "bad request", "unable to update bill", BillManagementUtil.getTimestamp());
+                    throw new BillManagementException(status);
+                }
+            } else {
+                Status status = BillManagementUtil.getStatus(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), UUID.randomUUID().toString(), "bad rquest", "no bill found", BillManagementUtil.getTimestamp());
+                throw new BillManagementException(status);
+            }
+        } catch (JsonProcessingException jpe) {
+            Status status = BillManagementUtil.getStatus(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), UUID.randomUUID().toString(), jpe.getMessage(), jpe.getStackTrace().toString(), BillManagementUtil.getTimestamp());
+            throw new BillManagementException(status);
+        } catch (Exception e) {
+            Status status = BillManagementUtil.getStatus(false, HttpStatus.INTERNAL_SERVER_ERROR.value(), UUID.randomUUID().toString(), e.getMessage(), e.getStackTrace().toString(), BillManagementUtil.getTimestamp());
             throw new BillManagementException(status);
         }
     }
